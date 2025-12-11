@@ -1,12 +1,12 @@
 require('dotenv').config();
 const pactum = require('pactum');
-const auth = require('../src/auth');
 
 beforeAll(async () => {
   // set base URL for Pactum requests
   pactum.request.setBaseUrl(process.env.API_BASE_URL || 'http://localhost');
 
   try {
+    const auth = await import('../src/auth.js');
     const token = await auth.getToken();
     if (token) {
       pactum.request.setDefaultHeaders({ Authorization: `Bearer ${token}` });

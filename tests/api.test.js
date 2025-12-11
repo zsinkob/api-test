@@ -1,9 +1,15 @@
 require('dotenv').config();
 const pactum = require('pactum');
-const rp = require('../src/requestProvider');
 
 describe('API Test Framework - Pactum Example Tests', () => {
     const base = process.env.API_BASE_URL;
+    let rp;
+
+    beforeAll(async () => {
+        const mod = await import('../src/requestProvider.js');
+        const RequestProvider = mod.default;
+        rp = new RequestProvider();
+    });
 
     if (base) {
         test('POST /insurance/provider should return 2xx', async () => {
