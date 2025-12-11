@@ -2,25 +2,33 @@ require('dotenv').config();
 const pactum = require('pactum');
 const { matchers } = require('pactum');
 const nock = require('nock');
-const rp = require('../src/requestProvider');
 
 describe('Pactum validation demo - end-to-end techniques', () => {
   const base = process.env.API_BASE_URL || 'http://localhost';
-  const scope = nock(base)
-    .persist()
-    .post('/insurance/provider')
-    .reply(201, (uri, requestBody) => ({
-      id: 'prov-12345',
-      name: requestBody.name || 'Test Provider',
-      contactEmail: requestBody.contactEmail || 'provider@example.com',
-      price: requestBody.price || 9.99
-    }), { 'Content-Type': 'application/json' })
-    .post('/insurance')
-    .reply(200, (uri, requestBody) => ({
-      id: 'ins-98765',
-      policyNumber: `PN-${Math.floor(Math.random() * 100000)}`,
-      providerId: requestBody.provider && requestBody.provider.id ? requestBody.provider.id : 'prov-12345'
-    }), { 'Content-Type': 'application/json' });
+  let rp;
+  let scope;
+
+  beforeAll(async () => {
+    const mod = await import('../src/requestProvider.js');
+    const RequestProvider = mod.default;
+    rp = new RequestProvider();
+
+    scope = nock(base)
+      .persist()
+      .post('/insurance/provider')
+      .reply(201, (uri, requestBody) => ({
+        id: 'prov-12345',
+        name: requestBody.name || 'Test Provider',
+        contactEmail: requestBody.contactEmail || 'provider@example.com',
+        price: requestBody.price || 9.99
+      }), { 'Content-Type': 'application/json' })
+      .post('/insurance')
+      .reply(200, (uri, requestBody) => ({
+        id: 'ins-98765',
+        policyNumber: `PN-${Math.floor(Math.random() * 100000)}`,
+        providerId: requestBody.provider && requestBody.provider.id ? requestBody.provider.id : 'prov-12345'
+      }), { 'Content-Type': 'application/json' });
+  });
 
   afterAll(() => {
     nock.cleanAll();
@@ -50,8 +58,6 @@ describe('Pactum validation demo - end-to-end techniques', () => {
       .expectJsonSchema(providerSchema)                     // schema validation
       .stores('providerId', 'id')                           // store id for later
       .toss();
-
-    // stored value is used in the next test (see usage of $S{providerId})
   });
 
   test('create insurance: use stored provider id and check body contains value', async () => {

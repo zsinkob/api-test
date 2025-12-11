@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Simple Node JavaScript based API testing framework",
   "main": "src/index.js",
+  "type": "module",
   "scripts": {
     "test": "jest --runInBand"
   },
@@ -16,12 +17,19 @@
   "devDependencies": {
     "jest": "^29.0.0",
     "nock": "^13.0.0",
-    "pactum": "^3.3.0"
+    "pactum": "^3.3.0",
+    "babel-jest": "^29.0.0",
+    "@babel/core": "^7.21.0",
+    "@babel/preset-env": "^7.21.0"
   },
   "jest": {
     "testEnvironment": "node",
+    "transform": {
+      "^.+\\.js$": "babel-jest"
+    },
     "setupFilesAfterEnv": [
       "<rootDir>/tests/setup.js"
     ]
   }
+
 }

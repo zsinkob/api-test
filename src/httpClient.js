@@ -1,6 +1,6 @@
-require('dotenv').config();
-const axios = require('axios');
-const { getToken } = require('./auth');
+import 'dotenv/config';
+import axios from 'axios';
+import { getToken } from './auth.js';
 
 // Default to localhost so tests can mock endpoints without requiring a real API
 const baseURL = process.env.API_BASE_URL || 'http://localhost';
@@ -27,4 +27,4 @@ client.interceptors.request.use(async (config) => {
   return config;
 });
 
-module.exports = client;
+export default client;

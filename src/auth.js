@@ -1,5 +1,5 @@
-require('dotenv').config();
-const axios = require('axios');
+import 'dotenv/config';
+import axios from 'axios';
 
 const tenant = process.env.TENANT_ID || 'common';
 const tokenUrl = process.env.TOKEN_URL || `https://login.microsoftonline.com/${tenant}/oauth2/v2.0/token`;
@@ -12,7 +12,7 @@ let cached = {
   expiresAt: 0
 };
 
-async function getToken() {
+export async function getToken() {
   // If a local token is provided, use it and skip the OAuth flow.
   const localToken = process.env.LOCAL_TOKEN;
   if (localToken) {
@@ -51,5 +51,3 @@ async function getToken() {
   cached.expiresAt = Date.now() + expiresIn * 1000;
   return cached.token;
 }
-
-module.exports = { getToken };
