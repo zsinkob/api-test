@@ -13,22 +13,31 @@ describe('API Test Framework - Pactum Example Tests', () => {
 
     if (base) {
         test('POST /insurance/provider should return 2xx', async () => {
-            const payload = rp.provider();
             await pactum.spec()
                 .post('/insurance/provider')
-                .withJson(payload)
+                .withJson(rp.provider())
                 .expectStatus(201)
                 .toss();
+
+            await pactum.spec()
+                .post('/insurance/product')
+                .withJson(rp.product())
+                .expectStatus(201)
+                .toss();
+
+            await pactum.spec()
+                .post('/insurance/package')
+                .withJson(rp.package())
+                .expectStatus(201)
+                .toss();
+            
+            await pactum.spec()
+            .post('/insurance/insurance')
+            .withJson(rp.insurance())
+            .expectStatus(201)
+            .toss();
         });
 
-        test('POST /insurance should accept insurance and return 2xx', async () => {
-            const payload = rp.insurance();
-            await pactum.spec()
-                .post('/insurance')
-                .withJson(payload)
-                .expectStatus(200)
-                .toss();
-        });
     } else {
         test('network tests skipped (set API_BASE_URL in .env to enable)', () => {
             expect(true).toBe(true);
